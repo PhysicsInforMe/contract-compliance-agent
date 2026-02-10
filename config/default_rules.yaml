@@ -1,0 +1,332 @@
+# =============================================================================
+# Contract Compliance Rules Configuration
+# =============================================================================
+# 
+# This file defines the compliance rules used to analyze contracts.
+# Each clause category includes:
+#   - name: Human-readable clause name
+#   - required: Whether this clause must be present
+#   - description: What this clause should cover
+#   - keywords: Terms that indicate this clause is present
+#   - expected_elements: Specific elements that should be included
+#   - risk_if_missing: Risk level if clause is absent (high/medium/low)
+#
+# Based on CUAD benchmark categories and ISO 37301 compliance frameworks.
+# =============================================================================
+
+version: "1.0"
+last_updated: "2025-01-11"
+
+# =============================================================================
+# Clause Categories
+# =============================================================================
+
+clauses:
+  # ---------------------------------------------------------------------------
+  # CRITICAL CLAUSES (High Risk if Missing)
+  # ---------------------------------------------------------------------------
+  
+  - name: "Termination Rights"
+    id: "termination"
+    required: true
+    risk_if_missing: "high"
+    description: "Conditions under which either party can terminate the agreement"
+    keywords:
+      - "termination"
+      - "terminate"
+      - "cancellation"
+      - "end of agreement"
+      - "expiration"
+      - "notice period"
+    expected_elements:
+      - "Termination for cause conditions"
+      - "Termination for convenience (optional but recommended)"
+      - "Notice period requirements"
+      - "Effect of termination"
+      - "Survival of obligations"
+    
+  - name: "Intellectual Property Assignment"
+    id: "ip_assignment"
+    required: true
+    risk_if_missing: "high"
+    description: "Ownership and transfer of intellectual property rights"
+    keywords:
+      - "intellectual property"
+      - "IP rights"
+      - "ownership"
+      - "assignment"
+      - "work product"
+      - "inventions"
+      - "copyright"
+      - "patent"
+    expected_elements:
+      - "Clear IP ownership statement"
+      - "Assignment of rights"
+      - "Work-for-hire provisions"
+      - "Pre-existing IP treatment"
+    
+  - name: "Limitation of Liability"
+    id: "liability_limitation"
+    required: true
+    risk_if_missing: "high"
+    description: "Caps on liability and exclusions of certain damages"
+    keywords:
+      - "limitation of liability"
+      - "liability cap"
+      - "damages"
+      - "liable"
+      - "maximum liability"
+      - "consequential damages"
+      - "indirect damages"
+    expected_elements:
+      - "Liability cap amount or formula"
+      - "Exclusion of consequential damages"
+      - "Carve-outs from limitations"
+      - "Mutual vs. unilateral limitations"
+
+  # ---------------------------------------------------------------------------
+  # IMPORTANT CLAUSES (Medium Risk if Missing)
+  # ---------------------------------------------------------------------------
+  
+  - name: "Confidentiality Obligations"
+    id: "confidentiality"
+    required: true
+    risk_if_missing: "medium"
+    description: "Protection of confidential information exchanged between parties"
+    keywords:
+      - "confidential"
+      - "confidentiality"
+      - "non-disclosure"
+      - "proprietary information"
+      - "trade secrets"
+      - "NDA"
+    expected_elements:
+      - "Definition of confidential information"
+      - "Permitted disclosures"
+      - "Duration of confidentiality"
+      - "Return or destruction of information"
+    
+  - name: "Indemnification"
+    id: "indemnification"
+    required: true
+    risk_if_missing: "medium"
+    description: "Obligations to compensate for third-party claims"
+    keywords:
+      - "indemnify"
+      - "indemnification"
+      - "hold harmless"
+      - "defend"
+      - "third party claims"
+    expected_elements:
+      - "Scope of indemnification"
+      - "Indemnification procedures"
+      - "Notice requirements"
+      - "Control of defense"
+    
+  - name: "Governing Law and Jurisdiction"
+    id: "governing_law"
+    required: true
+    risk_if_missing: "medium"
+    description: "Applicable law and dispute resolution forum"
+    keywords:
+      - "governing law"
+      - "jurisdiction"
+      - "venue"
+      - "applicable law"
+      - "courts"
+      - "arbitration"
+    expected_elements:
+      - "Choice of law"
+      - "Exclusive vs. non-exclusive jurisdiction"
+      - "Arbitration clause (if applicable)"
+    
+  - name: "Term and Duration"
+    id: "term"
+    required: true
+    risk_if_missing: "medium"
+    description: "Length of the agreement and renewal provisions"
+    keywords:
+      - "term"
+      - "duration"
+      - "effective date"
+      - "renewal"
+      - "expiration"
+      - "commencement"
+    expected_elements:
+      - "Start date"
+      - "End date or term length"
+      - "Renewal provisions"
+      - "Auto-renewal terms"
+    
+  - name: "Payment Terms"
+    id: "payment"
+    required: true
+    risk_if_missing: "medium"
+    description: "Compensation, invoicing, and payment schedules"
+    keywords:
+      - "payment"
+      - "compensation"
+      - "fees"
+      - "invoice"
+      - "pricing"
+      - "billing"
+    expected_elements:
+      - "Payment amounts or rates"
+      - "Payment schedule"
+      - "Invoice requirements"
+      - "Late payment consequences"
+
+  # ---------------------------------------------------------------------------
+  # STANDARD CLAUSES (Low Risk if Missing)
+  # ---------------------------------------------------------------------------
+  
+  - name: "Representations and Warranties"
+    id: "warranties"
+    required: false
+    risk_if_missing: "low"
+    description: "Statements of fact and quality assurances"
+    keywords:
+      - "represents"
+      - "warrants"
+      - "warranty"
+      - "representation"
+      - "covenants"
+    expected_elements:
+      - "Authority to enter agreement"
+      - "Non-infringement"
+      - "Quality standards"
+    
+  - name: "Force Majeure"
+    id: "force_majeure"
+    required: false
+    risk_if_missing: "low"
+    description: "Excusing performance due to extraordinary events"
+    keywords:
+      - "force majeure"
+      - "act of God"
+      - "unforeseen circumstances"
+      - "beyond reasonable control"
+    expected_elements:
+      - "Definition of force majeure events"
+      - "Notice requirements"
+      - "Effect on obligations"
+    
+  - name: "Assignment Rights"
+    id: "assignment"
+    required: false
+    risk_if_missing: "low"
+    description: "Rights to transfer agreement to third parties"
+    keywords:
+      - "assignment"
+      - "transfer"
+      - "delegate"
+      - "successor"
+    expected_elements:
+      - "Restrictions on assignment"
+      - "Permitted assignments"
+      - "Consent requirements"
+    
+  - name: "Notices"
+    id: "notices"
+    required: false
+    risk_if_missing: "low"
+    description: "Requirements for formal communications"
+    keywords:
+      - "notice"
+      - "notification"
+      - "written notice"
+      - "communication"
+    expected_elements:
+      - "Notice addresses"
+      - "Acceptable delivery methods"
+      - "When notice is deemed received"
+    
+  - name: "Entire Agreement"
+    id: "entire_agreement"
+    required: false
+    risk_if_missing: "low"
+    description: "Integration clause superseding prior agreements"
+    keywords:
+      - "entire agreement"
+      - "whole agreement"
+      - "supersedes"
+      - "integration"
+      - "merger"
+    expected_elements:
+      - "Supersession of prior agreements"
+      - "Amendment requirements"
+    
+  - name: "Severability"
+    id: "severability"
+    required: false
+    risk_if_missing: "low"
+    description: "Effect of invalid provisions on remainder"
+    keywords:
+      - "severability"
+      - "severable"
+      - "invalid provision"
+      - "unenforceable"
+    expected_elements:
+      - "Invalid provision treatment"
+      - "Remainder enforcement"
+    
+  - name: "Non-Compete / Non-Solicitation"
+    id: "non_compete"
+    required: false
+    risk_if_missing: "low"
+    description: "Restrictions on competitive activities"
+    keywords:
+      - "non-compete"
+      - "non-solicitation"
+      - "competitive"
+      - "restricted activities"
+    expected_elements:
+      - "Scope of restriction"
+      - "Geographic limitations"
+      - "Time limitations"
+    
+  - name: "Audit Rights"
+    id: "audit"
+    required: false
+    risk_if_missing: "low"
+    description: "Rights to inspect records and compliance"
+    keywords:
+      - "audit"
+      - "inspection"
+      - "records"
+      - "books and records"
+    expected_elements:
+      - "Audit scope"
+      - "Notice requirements"
+      - "Cost allocation"
+
+# =============================================================================
+# Scoring Configuration
+# =============================================================================
+
+scoring:
+  # Minimum score thresholds for risk levels
+  thresholds:
+    low_risk: 0.7      # Score >= 0.7 = Green/Low Risk
+    medium_risk: 0.4   # Score 0.4-0.7 = Yellow/Medium Risk
+    # Score < 0.4 = Red/High Risk
+  
+  # Weights for different scoring components
+  component_weights:
+    presence: 0.3       # Is the clause present?
+    similarity: 0.4     # How similar to expected language?
+    completeness: 0.3   # Are all expected elements present?
+
+# =============================================================================
+# Report Configuration
+# =============================================================================
+
+report:
+  # Include detailed clause analysis
+  include_details: true
+  
+  # Include recommendations
+  include_recommendations: true
+  
+  # Maximum recommendations to show
+  max_recommendations: 10

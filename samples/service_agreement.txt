@@ -1,0 +1,81 @@
+MASTER SERVICES AGREEMENT
+
+This Master Services Agreement ("Agreement") is entered into as of February 1, 2025 between:
+
+CloudTech Services Inc. ("Provider")
+Address: 789 Technology Parkway, Austin, TX 78701
+
+and
+
+Enterprise Solutions Corp. ("Client")
+Address: 321 Corporate Boulevard, Boston, MA 02101
+
+1. SERVICES
+
+1.1 Provider agrees to provide to Client the consulting and implementation services ("Services") as described in one or more Statements of Work ("SOW") to be executed by the parties from time to time.
+
+1.2 Each SOW shall describe the specific Services to be provided, deliverables, timeline, and any service-specific terms.
+
+2. COMPENSATION
+
+2.1 Client shall pay Provider the fees specified in each SOW.
+
+2.2 Unless otherwise specified in a SOW, Provider shall invoice Client monthly for Services performed.
+
+2.3 Payment is due within thirty (30) days of invoice date.
+
+2.4 Late payments shall accrue interest at the rate of 1.5% per month or the maximum rate permitted by law, whichever is less.
+
+3. TERM
+
+3.1 This Agreement shall commence on the date first written above and shall continue for a period of one (1) year, unless terminated earlier as provided herein.
+
+3.2 This Agreement shall automatically renew for successive one (1) year periods unless either party provides written notice of non-renewal at least sixty (60) days prior to the end of the then-current term.
+
+4. CONFIDENTIALITY
+
+4.1 Each party agrees to hold in confidence all Confidential Information of the other party.
+
+4.2 "Confidential Information" means any non-public information disclosed by one party to the other that is designated as confidential or that reasonably should be understood to be confidential.
+
+4.3 This confidentiality obligation shall survive termination of this Agreement for a period of three (3) years.
+
+5. REPRESENTATIONS AND WARRANTIES
+
+5.1 Provider represents and warrants that:
+(a) It has the right and authority to enter into this Agreement;
+(b) The Services will be performed in a professional and workmanlike manner;
+(c) Provider personnel have the necessary skills and qualifications.
+
+5.2 Client represents and warrants that:
+(a) It has the right and authority to enter into this Agreement;
+(b) It will provide timely access to information and resources necessary for Provider to perform the Services.
+
+6. GOVERNING LAW
+
+6.1 This Agreement shall be governed by and construed in accordance with the laws of the State of Texas.
+
+7. NOTICES
+
+7.1 All notices under this Agreement shall be in writing and sent to the addresses listed above.
+
+8. ENTIRE AGREEMENT
+
+8.1 This Agreement, together with any SOWs, constitutes the entire agreement between the parties with respect to its subject matter.
+
+[NOTE: This agreement is intentionally incomplete for testing purposes. It is missing several important clauses including:
+- Limitation of Liability
+- Indemnification
+- Intellectual Property provisions
+- Termination provisions
+- Force Majeure
+- Assignment restrictions]
+
+IN WITNESS WHEREOF, the parties have executed this Agreement as of the date first written above.
+
+CLOUDTECH SERVICES INC.                    ENTERPRISE SOLUTIONS CORP.
+
+By: _________________________              By: _________________________
+Name:                                      Name:
+Title:                                     Title:
+Date:                                      Date:

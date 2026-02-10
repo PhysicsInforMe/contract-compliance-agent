@@ -1,0 +1,122 @@
+MUTUAL NON-DISCLOSURE AGREEMENT
+
+This Mutual Non-Disclosure Agreement ("Agreement") is entered into as of the 15th day of January, 2025 (the "Effective Date") by and between:
+
+TechCorp Solutions Inc., a Delaware corporation with its principal place of business at 123 Innovation Drive, San Francisco, CA 94102 ("Party A")
+
+and
+
+DataVentures LLC, a California limited liability company with its principal place of business at 456 Market Street, Suite 800, San Francisco, CA 94105 ("Party B")
+
+(each a "Party" and collectively the "Parties")
+
+RECITALS
+
+WHEREAS, the Parties wish to explore a potential business relationship related to technology licensing and integration services (the "Purpose"); and
+
+WHEREAS, in connection with the Purpose, each Party may disclose to the other Party certain confidential and proprietary information;
+
+NOW, THEREFORE, in consideration of the mutual covenants and agreements contained herein, and for other good and valuable consideration, the receipt and sufficiency of which are hereby acknowledged, the Parties agree as follows:
+
+1. DEFINITION OF CONFIDENTIAL INFORMATION
+
+1.1 "Confidential Information" means any and all information or data, in any form or medium, that is disclosed by one Party (the "Disclosing Party") to the other Party (the "Receiving Party"), whether orally, in writing, electronically, or by inspection of tangible objects, and that:
+
+(a) Is designated as "Confidential," "Proprietary," or with a similar legend at the time of disclosure; or
+
+(b) Is disclosed orally or visually and identified as confidential at the time of disclosure, and confirmed in writing within thirty (30) days thereafter; or
+
+(c) Should reasonably be understood to be confidential given the nature of the information and the circumstances of disclosure.
+
+1.2 Confidential Information includes, without limitation: trade secrets, inventions, ideas, processes, formulas, source and object code, data, programs, other works of authorship, know-how, improvements, discoveries, developments, designs, and techniques; information regarding plans for research, development, new products, marketing and selling, business plans, budgets and unpublished financial statements, licenses, prices and costs, suppliers, and customers; and information regarding the skills and compensation of employees of the Disclosing Party.
+
+2. EXCLUSIONS FROM CONFIDENTIAL INFORMATION
+
+2.1 Confidential Information shall not include information that the Receiving Party can demonstrate:
+
+(a) Was publicly known and generally available in the public domain prior to the time of disclosure by the Disclosing Party;
+
+(b) Becomes publicly known and generally available after disclosure by the Disclosing Party through no wrongful action or inaction of the Receiving Party;
+
+(c) Was rightfully in the possession of the Receiving Party without confidentiality restrictions prior to disclosure by the Disclosing Party;
+
+(d) Is rightfully obtained by the Receiving Party from a third party without breach of any confidentiality obligation to the Disclosing Party; or
+
+(e) Is independently developed by the Receiving Party without use of or reference to the Disclosing Party's Confidential Information.
+
+3. OBLIGATIONS OF RECEIVING PARTY
+
+3.1 Non-Disclosure. The Receiving Party shall:
+
+(a) Hold and maintain the Confidential Information in strict confidence;
+
+(b) Not disclose the Confidential Information to any third parties without the prior written consent of the Disclosing Party;
+
+(c) Protect the Confidential Information using the same degree of care it uses to protect its own confidential information of like kind, but in no event less than reasonable care.
+
+3.2 Limited Use. The Receiving Party shall use the Confidential Information solely for the Purpose and shall not use the Confidential Information for any other purpose without the prior written consent of the Disclosing Party.
+
+3.3 Authorized Disclosure. The Receiving Party may disclose Confidential Information only to its employees, contractors, and agents who:
+
+(a) Have a need to know such information for the Purpose;
+(b) Have been informed of the confidential nature of the information; and
+(c) Are bound by confidentiality obligations at least as restrictive as those contained herein.
+
+4. TERM AND TERMINATION
+
+4.1 Term. This Agreement shall commence on the Effective Date and shall continue for a period of two (2) years, unless earlier terminated as provided herein.
+
+4.2 Termination for Convenience. Either Party may terminate this Agreement at any time upon thirty (30) days' prior written notice to the other Party.
+
+4.3 Survival. The confidentiality obligations under this Agreement shall survive termination and shall continue for a period of three (3) years following the termination or expiration of this Agreement.
+
+5. RETURN OR DESTRUCTION OF CONFIDENTIAL INFORMATION
+
+5.1 Upon termination of this Agreement or upon written request by the Disclosing Party, the Receiving Party shall promptly:
+
+(a) Return to the Disclosing Party all tangible materials containing Confidential Information; or
+
+(b) Destroy all such materials and provide written certification of such destruction within thirty (30) days.
+
+5.2 Notwithstanding the foregoing, the Receiving Party may retain one (1) archival copy of the Confidential Information solely for purposes of compliance with applicable law or regulatory requirements.
+
+6. NO LICENSE OR WARRANTY
+
+6.1 Nothing in this Agreement shall be construed as granting any rights, by license or otherwise, to any Confidential Information, except as expressly set forth herein.
+
+6.2 ALL CONFIDENTIAL INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND. THE DISCLOSING PARTY DISCLAIMS ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
+
+7. REMEDIES
+
+7.1 The Parties acknowledge that any breach of this Agreement may cause irreparable harm for which monetary damages may be inadequate. Accordingly, the Disclosing Party shall be entitled to seek equitable relief, including injunction and specific performance, in addition to all other remedies available at law or in equity.
+
+8. GOVERNING LAW AND JURISDICTION
+
+8.1 This Agreement shall be governed by and construed in accordance with the laws of the State of Delaware, without regard to its conflicts of law principles.
+
+8.2 Any dispute arising out of or relating to this Agreement shall be resolved exclusively in the state or federal courts located in Wilmington, Delaware, and each Party hereby consents to the personal jurisdiction of such courts.
+
+9. MISCELLANEOUS
+
+9.1 Entire Agreement. This Agreement constitutes the entire agreement between the Parties with respect to the subject matter hereof and supersedes all prior or contemporaneous oral or written agreements, representations, and understandings.
+
+9.2 Amendment. This Agreement may not be amended or modified except by a written instrument signed by both Parties.
+
+9.3 Severability. If any provision of this Agreement is held to be invalid or unenforceable, the remaining provisions shall continue in full force and effect.
+
+9.4 Waiver. The failure of either Party to enforce any right or provision of this Agreement shall not constitute a waiver of such right or provision.
+
+9.5 Assignment. Neither Party may assign this Agreement without the prior written consent of the other Party, except that either Party may assign this Agreement to a successor in connection with a merger, acquisition, or sale of all or substantially all of its assets.
+
+9.6 Notices. All notices under this Agreement shall be in writing and shall be deemed given when delivered personally, sent by confirmed email, or three (3) days after being sent by registered or certified mail to the addresses set forth above.
+
+9.7 Counterparts. This Agreement may be executed in counterparts, each of which shall be deemed an original, and all of which together shall constitute one and the same instrument.
+
+IN WITNESS WHEREOF, the Parties have executed this Agreement as of the Effective Date.
+
+TECHCORP SOLUTIONS INC.                    DATAVENTURES LLC
+
+By: _________________________              By: _________________________
+Name: John Smith                           Name: Jane Doe
+Title: Chief Executive Officer             Title: Managing Partner
+Date: January 15, 2025                     Date: January 15, 2025
