@@ -356,7 +356,7 @@ pytest tests/test_scorer.py -v
 These tests require Ollama to be running with a model available:
 
 ```bash
-pytest tests/test_integration.py -v
+pytest tests/test_integration.py -v   # Ollama-dependent tests are skipped if Ollama is not running
 ```
 
 **Expected output**: End-to-end tests pass, confirming the full pipeline works.

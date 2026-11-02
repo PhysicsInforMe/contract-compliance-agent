@@ -10,7 +10,6 @@ Usage:
     python main.py --contract contract.txt --model qwen2.5:7b --format json
 """
 
-import sys
 from pathlib import Path
 from typing import Optional
 
@@ -96,8 +95,22 @@ def analyze(
         "employment": ContractType.EMPLOYMENT,
         "software_license": ContractType.SOFTWARE_LICENSE,
     }
-    ct = type_map.get(contract_type.lower(), ContractType.GENERAL)
-    
+    ct = type_map.get(contract_type.lower())
+    if ct is None:
+        console.print(
+            f"[red]Error:[/red] Unknown contract type '{contract_type}'. "
+            f"Choose one of: {', '.join(type_map)}"
+        )
+        raise typer.Exit(2)
+
+    format = format.lower()
+    if format not in ("markdown", "json", "text"):
+        console.print(
+            f"[red]Error:[/red] Unknown format '{format}'. "
+            "Choose one of: markdown, json, text"
+        )
+        raise typer.Exit(2)
+        
     try:
         # Initialize agent
         with ComplianceAgent(
@@ -231,7 +244,10 @@ def version():
     console.print()
     console.print("A local-first AI agent for contract compliance analysis.")
     console.print()
-    console.print("GitHub: https://github.com/yourusername/contract-compliance-agent")
+    console.print(
+        "GitHub: https://github.com/PhysicsInforMe/scientific-prototypes"
+        "/tree/main/contract-compliance-agent"
+    )
 
 
 # =============================================================================

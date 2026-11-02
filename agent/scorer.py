@@ -24,6 +24,34 @@ from models.schemas import (
 )
 
 
+def apply_contract_type_modifiers(
+    clause_weights: dict,
+    modifiers: Optional[dict]
+) -> dict:
+    """
+    Scale clause weights by contract-type modifiers.
+
+    Modifiers are multiplicative (e.g. ``{"confidentiality": 1.2}``) and
+    the result is clamped to [0, 1] so that weights stay meaningful.
+
+    Args:
+        clause_weights: Base clause_id -> weight mapping
+        modifiers: clause_id -> multiplier mapping for the contract type
+
+    Returns:
+        New dict with adjusted weights (input is not mutated)
+    """
+    adjusted = dict(clause_weights)
+    for clause_id, factor in (modifiers or {}).items():
+        try:
+            factor = float(factor)
+        except (TypeError, ValueError):
+            continue
+        base = adjusted.get(clause_id, 0.5)
+        adjusted[clause_id] = max(0.0, min(1.0, base * factor))
+    return adjusted
+
+
 # =============================================================================
 # Scoring Configuration
 # =============================================================================
@@ -77,14 +105,15 @@ class ComplianceScorer:
             thresholds: Risk level thresholds
             clause_weights: Per-clause importance weights
         """
-        self.weights = weights or DEFAULT_WEIGHTS.copy()
-        self.thresholds = thresholds or DEFAULT_THRESHOLDS.copy()
+        self.weights = {**DEFAULT_WEIGHTS, **(weights or {})}
+        self.thresholds = {**DEFAULT_THRESHOLDS, **(thresholds or {})}
         self.clause_weights = clause_weights or {}
-        
-        # Validate weights sum to 1.0
+
+        # Normalize component weights so they sum to 1.0
         weight_sum = sum(self.weights.values())
+        if weight_sum <= 0:
+            raise ValueError("Component weights must sum to a positive value")
         if abs(weight_sum - 1.0) > 0.01:
-            # Normalize weights
             self.weights = {k: v / weight_sum for k, v in self.weights.items()}
     
     # -------------------------------------------------------------------------
@@ -110,11 +139,12 @@ class ComplianceScorer:
         Returns:
             Weighted overall score (0-1)
         """
-        return (
+        score = (
             presence_score * self.weights["presence"] +
             similarity_score * self.weights["similarity"] +
             completeness_score * self.weights["completeness"]
         )
+        return max(0.0, min(1.0, score))
     
     def score_clause_analysis(self, analysis: ClauseAnalysis) -> ClauseAnalysis:
         """
@@ -165,16 +195,27 @@ class ComplianceScorer:
         Calculate overall compliance score for a document.
         
         Uses weighted average of clause scores, where weights
-        reflect clause importance.
-        
+        reflect clause importance. Clauses marked not applicable are
+        reported separately and excluded from the averages.
+
         Args:
             clause_analyses: List of clause analysis results
-            
+
         Returns:
             ComplianceScore with overall metrics
         """
         if not clause_analyses:
             return self._empty_compliance_score()
+
+        not_applicable = sum(
+            1 for a in clause_analyses if a.status == ClauseStatus.NOT_APPLICABLE
+        )
+        scored = [a for a in clause_analyses if a.status != ClauseStatus.NOT_APPLICABLE]
+        if not scored:
+            score = self._empty_compliance_score()
+            score.clauses_analyzed = len(clause_analyses)
+            score.clauses_not_applicable = not_applicable
+            return score
         
         # Calculate weighted average
         weighted_sum = 0.0
@@ -192,7 +233,7 @@ class ComplianceScorer:
         medium_risk = 0
         low_risk = 0
         
-        for analysis in clause_analyses:
+        for analysis in scored:
             # Get clause weight
             weight = self.get_clause_weight(analysis.clause_id)
             
@@ -229,19 +270,20 @@ class ComplianceScorer:
             if critical_weight_total > 0 else 1.0
         )
         
-        total_clauses = len(clause_analyses)
-        coverage = ((present + partial * 0.5) / total_clauses * 100) if total_clauses > 0 else 0.0
-        
+        total_scored = len(scored)
+        coverage = ((present + partial * 0.5) / total_scored * 100) if total_scored > 0 else 0.0
+
         return ComplianceScore(
             overall_score=round(overall_score, 4),
             risk_level=determine_risk_level(overall_score, self.thresholds),
             maturity_level=determine_maturity_level(overall_score),
             critical_clause_score=round(critical_score, 4),
             coverage_percentage=round(coverage, 2),
-            clauses_analyzed=total_clauses,
+            clauses_analyzed=len(clause_analyses),
             clauses_present=present,
             clauses_partial=partial,
             clauses_missing=missing,
+            clauses_not_applicable=not_applicable,
             high_risk_issues=high_risk,
             medium_risk_issues=medium_risk,
             low_risk_issues=low_risk

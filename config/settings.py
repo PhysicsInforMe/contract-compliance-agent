@@ -71,12 +71,13 @@ class ScoringConfig(BaseModel):
         description="Weight for clause completeness (0-1)"
     )
     
-    # Risk level thresholds
+    # Risk level thresholds. These defaults are only used when the rules
+    # YAML has no ``scoring`` section (see config/default_rules.yaml).
     high_risk_threshold: float = Field(
         default=0.4,
         description="Score below this = HIGH RISK (Red)"
     )
-    
+
     medium_risk_threshold: float = Field(
         default=0.7,
         description="Score below this (but above high) = MEDIUM RISK (Yellow)"

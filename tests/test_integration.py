@@ -1,15 +1,31 @@
 """
 Integration tests for Contract Compliance Agent.
 
-These tests require Ollama to be running with a model available.
-Run with: pytest tests/test_integration.py -v --integration
+Tests marked ``integration`` require a running Ollama instance with the
+configured model pulled; they are skipped automatically otherwise.
+Run only the offline tests with: pytest -m "not integration"
 """
 
 import pytest
-from pathlib import Path
 
 from agent import ComplianceAgent
 from models import RiskLevel, ContractType
+from tools import check_ollama_status
+
+
+def _ollama_ready() -> bool:
+    """True when Ollama answers and the default model is installed."""
+    try:
+        with ComplianceAgent() as agent:
+            status = agent.check_status()
+        return bool(status.get("available") and status.get("model_available"))
+    except Exception:
+        return False
+
+
+requires_ollama = pytest.mark.skipif(
+    not _ollama_ready(), reason="Ollama not available or model not pulled"
+)
 
 
 # =============================================================================
@@ -78,28 +94,10 @@ def incomplete_contract_text():
 # =============================================================================
 
 @pytest.mark.integration
+@requires_ollama
 class TestOllamaIntegration:
     """Integration tests requiring Ollama."""
-    
-    def test_agent_initialization(self):
-        """Test agent can be initialized."""
-        agent = ComplianceAgent(verbose=False)
-        assert agent is not None
-        agent.close()
-    
-    def test_ollama_status_check(self):
-        """Test Ollama status checking."""
-        agent = ComplianceAgent()
-        status = agent.check_status()
-        
-        assert "available" in status
-        assert "models" in status
-        agent.close()
-    
-    @pytest.mark.skipif(
-        not Path("/tmp/ollama_available").exists(),
-        reason="Ollama not available"
-    )
+
     def test_analyze_nda(self, sample_nda_text):
         """Test analyzing an NDA contract."""
         agent = ComplianceAgent(verbose=False)
@@ -115,11 +113,7 @@ class TestOllamaIntegration:
         assert len(result.clause_analyses) > 0
         
         agent.close()
-    
-    @pytest.mark.skipif(
-        not Path("/tmp/ollama_available").exists(),
-        reason="Ollama not available"
-    )
+
     def test_analyze_incomplete_contract(self, incomplete_contract_text):
         """Test analyzing incomplete contract detects missing clauses."""
         agent = ComplianceAgent(verbose=False)
@@ -144,7 +138,28 @@ class TestOllamaIntegration:
 
 class TestOffline:
     """Tests that don't require Ollama."""
-    
+
+    def test_agent_initialization(self):
+        """Test agent can be initialized."""
+        agent = ComplianceAgent(verbose=False)
+        assert agent is not None
+        agent.close()
+
+    def test_ollama_status_check(self):
+        """Test Ollama status checking (works whether or not Ollama runs)."""
+        agent = ComplianceAgent()
+        status = agent.check_status()
+
+        assert "available" in status
+        assert "models" in status
+        assert "model_available" in status
+        agent.close()
+
+    def test_check_ollama_status_helper(self):
+        status = check_ollama_status("http://127.0.0.1:1")
+        assert status["available"] is False
+        assert status["models"] == []
+
     def test_agent_config_loading(self):
         """Test configuration is loaded correctly."""
         agent = ComplianceAgent(verbose=False)
@@ -230,7 +245,6 @@ class TestReportGeneration:
             AnalysisResult, DocumentMetadata, ComplianceScore,
             ClauseAnalysis, ClauseStatus, MaturityLevel
         )
-        from datetime import datetime
         
         # Create minimal test data
         result = AnalysisResult(
@@ -319,12 +333,3 @@ class TestReportGeneration:
         assert data["compliance_score"]["overall_score"] == 0.75
 
 
-# =============================================================================
-# Pytest Configuration
-# =============================================================================
-
-def pytest_configure(config):
-    """Register custom markers."""
-    config.addinivalue_line(
-        "markers", "integration: marks tests as integration tests (require Ollama)"
-    )

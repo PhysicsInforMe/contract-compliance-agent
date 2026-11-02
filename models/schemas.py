@@ -197,6 +197,10 @@ class ComplianceScore(BaseModel):
     clauses_present: int = Field(..., description="Clauses found present")
     clauses_partial: int = Field(..., description="Clauses partially present")
     clauses_missing: int = Field(..., description="Clauses missing")
+    clauses_not_applicable: int = Field(
+        default=0,
+        description="Clauses marked not applicable (excluded from scoring)"
+    )
     
     # Risk breakdown
     high_risk_issues: int = Field(default=0, description="High risk issue count")
@@ -258,13 +262,7 @@ class AnalysisResult(BaseModel):
         default=0.0,
         description="Total processing time"
     )
-    tokens_used: int = Field(default=0, description="LLM tokens consumed")
-    
-    class Config:
-        """Pydantic configuration."""
-        json_encoders = {
-            datetime: lambda v: v.isoformat()
-        }
+    tokens_used: int = Field(default=0, description="LLM tokens consumed (prompt + completion)")
 
 
 # =============================================================================
@@ -288,7 +286,9 @@ class LLMResponse(BaseModel):
     
     content: str = Field(..., description="Generated text content")
     model: str = Field(..., description="Model that generated response")
-    tokens_used: int = Field(default=0, description="Tokens consumed")
+    tokens_used: int = Field(default=0, description="Tokens consumed (prompt + completion)")
+    prompt_tokens: int = Field(default=0, description="Prompt tokens evaluated")
+    completion_tokens: int = Field(default=0, description="Tokens generated")
     generation_time: float = Field(default=0.0, description="Time to generate")
 
 
@@ -296,20 +296,21 @@ class LLMResponse(BaseModel):
 # Helper Functions
 # =============================================================================
 
-def determine_risk_level(score: float, thresholds: dict = None) -> RiskLevel:
+def determine_risk_level(score: float, thresholds: Optional[dict] = None) -> RiskLevel:
     """
     Determine risk level from a score.
-    
+
     Args:
         score: Compliance score (0-1)
-        thresholds: Optional custom thresholds
-        
+        thresholds: Optional custom thresholds with keys "low_risk" and
+            "medium_risk". Missing keys fall back to the defaults (0.7, 0.4).
+
     Returns:
         RiskLevel enum value
     """
-    if thresholds is None:
-        thresholds = {"low_risk": 0.7, "medium_risk": 0.4}
-    
+    defaults = {"low_risk": 0.7, "medium_risk": 0.4}
+    thresholds = {**defaults, **(thresholds or {})}
+
     if score >= thresholds["low_risk"]:
         return RiskLevel.LOW
     elif score >= thresholds["medium_risk"]:

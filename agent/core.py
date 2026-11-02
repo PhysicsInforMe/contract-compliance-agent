@@ -9,9 +9,10 @@ from pathlib import Path
 from typing import Optional, Union
 
 from config.settings import AgentConfig, get_config, load_rules, load_weights
-from tools.llm_client import OllamaClient, check_ollama_status
+from tools.llm_client import OllamaClient, check_ollama_status, model_matches
 from tools.document_loader import DocumentLoader
 from agent.analyzer import ContractAnalyzer
+from agent.scorer import apply_contract_type_modifiers
 from agent.reporter import ReportGenerator, print_report, save_report
 from models.schemas import (
     AnalysisResult,
@@ -55,26 +56,33 @@ class ComplianceAgent:
             config: Optional full configuration object
             verbose: Enable verbose output
         """
-        # Load configuration
-        self.config = config or get_config(
-            model=model,
-            rules_path=rules_path,
-            verbose=verbose
-        )
-        self.verbose = verbose
-        
+        # Load configuration (explicit arguments override a supplied config)
+        if config is None:
+            config = get_config(model=model, rules_path=rules_path, verbose=verbose)
+        else:
+            if model:
+                config.ollama.model = model
+            if rules_path:
+                config.rules_path = Path(rules_path)
+            if verbose:
+                config.verbose = True
+        self.config = config
+        self.verbose = verbose or config.verbose
+
         # Load compliance rules
         self._rules_data = load_rules(self.config.rules_path)
         self._weights_data = load_weights(self.config.weights_path)
-        
-        # Parse clause rules
+
+        # Parse clause rules and scoring configuration
         self.clause_rules = self._parse_clause_rules()
-        self.clause_weights = self._weights_data.get("weights", {})
-        
+        self.clause_weights = self._weights_data.get("weights", {}) or {}
+        self.contract_type_modifiers = self._weights_data.get("contract_type_modifiers", {}) or {}
+        self.component_weights, self.risk_thresholds = self._parse_scoring_config()
+
         # Initialize components (lazy loading)
         self._llm_client: Optional[OllamaClient] = None
         self._document_loader: Optional[DocumentLoader] = None
-        self._analyzer: Optional[ContractAnalyzer] = None
+        self._analyzers: dict[tuple, ContractAnalyzer] = {}
         self._reporter: Optional[ReportGenerator] = None
     
     # -------------------------------------------------------------------------
@@ -102,14 +110,40 @@ class ComplianceAgent:
     
     @property
     def analyzer(self) -> ContractAnalyzer:
-        """Get or create the contract analyzer."""
-        if self._analyzer is None:
-            self._analyzer = ContractAnalyzer(
-                llm_client=self.llm,
-                clause_rules=self.clause_rules,
-                clause_weights=self.clause_weights
+        """Get or create the default (general contract type) analyzer."""
+        return self._get_analyzer(ContractType.GENERAL, None)
+
+    def _get_analyzer(
+        self,
+        contract_type: ContractType,
+        focus_clauses: Optional[list[str]]
+    ) -> ContractAnalyzer:
+        """
+        Get or create an analyzer for a contract type and clause subset.
+
+        Clause weights are adjusted with the ``contract_type_modifiers``
+        from the weights configuration (e.g. confidentiality counts more
+        in an NDA).
+        """
+        key = (contract_type, tuple(focus_clauses) if focus_clauses else None)
+        if key not in self._analyzers:
+            rules = self.clause_rules
+            if focus_clauses:
+                wanted = set(focus_clauses)
+                rules = [r for r in self.clause_rules if r.id in wanted]
+
+            weights = apply_contract_type_modifiers(
+                self.clause_weights,
+                self.contract_type_modifiers.get(contract_type.value)
             )
-        return self._analyzer
+            self._analyzers[key] = ContractAnalyzer(
+                llm_client=self.llm,
+                clause_rules=rules,
+                clause_weights=weights,
+                component_weights=self.component_weights,
+                risk_thresholds=self.risk_thresholds
+            )
+        return self._analyzers[key]
     
     @property
     def reporter(self) -> ReportGenerator:
@@ -173,19 +207,8 @@ class ComplianceAgent:
             print(f"Document loaded: {metadata.word_count} words")
             print(f"Analyzing with model: {self.config.ollama.model}")
         
-        # Filter rules if focus_clauses specified
-        rules_to_use = self.clause_rules
-        if focus_clauses:
-            rules_to_use = [r for r in self.clause_rules if r.id in focus_clauses]
-        
-        # Create analyzer with potentially filtered rules
-        analyzer = ContractAnalyzer(
-            llm_client=self.llm,
-            clause_rules=rules_to_use,
-            clause_weights=self.clause_weights
-        )
-        
-        # Run analysis
+        # Run analysis with the analyzer for this contract type / clause subset
+        analyzer = self._get_analyzer(contract_type, focus_clauses)
         result = analyzer.analyze(
             contract_text=contract_text,
             document_metadata=metadata,
@@ -223,7 +246,7 @@ class ComplianceAgent:
             character_count=len(contract_text)
         )
         
-        return self.analyzer.analyze(
+        return self._get_analyzer(contract_type, None).analyze(
             contract_text=contract_text,
             document_metadata=metadata,
             contract_type=contract_type
@@ -282,8 +305,8 @@ class ComplianceAgent:
         
         for r in results:
             lines.append(f"| {r['file']} | {r['score']:.2f} | {r['risk']} |")
-        
-        with open(filepath, "w") as f:
+
+        with open(filepath, "w", encoding="utf-8") as f:
             f.write("\n".join(lines))
     
     # -------------------------------------------------------------------------
@@ -307,7 +330,26 @@ class ComplianceAgent:
             rules.append(rule)
         
         return rules
-    
+
+    def _parse_scoring_config(self) -> tuple[Optional[dict], Optional[dict]]:
+        """
+        Read component weights and risk thresholds from the rules file.
+
+        The ``scoring`` section of the rules YAML takes precedence; the
+        ``ScoringConfig`` from the agent configuration is used otherwise.
+        """
+        scoring = self._rules_data.get("scoring") or {}
+        component_weights = scoring.get("component_weights") or {
+            "presence": self.config.scoring.presence_weight,
+            "similarity": self.config.scoring.similarity_weight,
+            "completeness": self.config.scoring.completeness_weight,
+        }
+        thresholds = scoring.get("thresholds") or {
+            "low_risk": self.config.scoring.medium_risk_threshold,
+            "medium_risk": self.config.scoring.high_risk_threshold,
+        }
+        return component_weights, thresholds
+
     def check_status(self) -> dict:
         """
         Check the status of the agent and its dependencies.
@@ -317,7 +359,9 @@ class ComplianceAgent:
         """
         status = check_ollama_status(self.config.ollama.base_url)
         status["configured_model"] = self.config.ollama.model
-        status["model_available"] = self.config.ollama.model in status.get("models", [])
+        status["model_available"] = model_matches(
+            self.config.ollama.model, status.get("models", [])
+        )
         status["rules_loaded"] = len(self.clause_rules)
         return status
     

@@ -5,9 +5,6 @@ Generates formatted compliance reports in multiple formats
 including terminal output, Markdown, and JSON.
 """
 
-import json
-from datetime import datetime
-from typing import Optional
 
 from models.schemas import (
     AnalysisResult,
@@ -169,8 +166,8 @@ class ReportGenerator:
             "",
             "## Executive Summary",
             "",
-            f"| Metric | Value |",
-            f"|--------|-------|",
+            "| Metric | Value |",
+            "|--------|-------|",
             f"| Overall Score | {result.compliance_score.overall_score:.2f} / 1.00 |",
             f"| Risk Level | {RISK_EMOJI[result.compliance_score.risk_level]} {RISK_TEXT[result.compliance_score.risk_level]} |",
             f"| Maturity Level | Level {result.compliance_score.maturity_level.value} ({MATURITY_NAMES[result.compliance_score.maturity_level]}) |",
@@ -324,8 +321,8 @@ class ReportGenerator:
         lines = [
             f"### {status_emoji} {analysis.clause_name}",
             "",
-            f"| Metric | Value |",
-            f"|--------|-------|",
+            "| Metric | Value |",
+            "|--------|-------|",
             f"| Status | {analysis.status.value.title()} |",
             f"| Overall Score | {analysis.overall_score:.2f} |",
             f"| Risk Level | {risk_emoji} {analysis.risk_level.value.upper()} |",

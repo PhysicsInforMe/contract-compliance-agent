@@ -27,7 +27,9 @@ A local-first AI agent that analyzes contracts against configurable compliance r
 
 - **Local-First Architecture**: Runs entirely on your machine using Ollama and open-source LLMs — no data leaves your infrastructure
 - **Quantitative Compliance Scoring**: Based on CUAD benchmark methodology and ISO 37301/37302 frameworks
-- **Multi-Format Support**: Processes PDF, DOCX, and TXT contract files
+- **Multi-Format Support**: Processes PDF, DOCX, TXT and Markdown contract files
+- **Long-Document Handling**: A keyword pre-filter narrows long contracts to the sections relevant to each clause before they reach the LLM
+- **Contract-Type Aware Scoring**: Clause weights are adjusted per contract type (NDA, service agreement, employment, software license) from `config/clause_weights.yaml`
 - **Multi-Clause Analysis**: Evaluates contracts against 15+ critical clause categories
 - **Risk Categorization**: Traffic-light system (Green/Yellow/Red) with ISO maturity level mapping
 - **Configurable Rules**: YAML-based compliance rules adaptable to organizational requirements
@@ -67,10 +69,10 @@ The agent follows a modular pipeline architecture separating concerns for mainta
 │  DocumentLoader   │   │  ContractAnalyzer │   │  ReportGenerator  │
 │  (tools/)         │   │  (agent/)         │   │  (agent/)         │
 │                   │   │                   │   │                   │
-│ • load_document() │   │ • analyze()       │   │ • to_markdown()   │
-│ • detect_format() │   │ • _extract()      │   │ • to_json()       │
-│ • extract_text()  │   │ • _score()        │   │ • to_terminal()   │
-│                   │   │ • _recommend()    │   │ • to_pdf()        │
+│ • load()          │   │ • analyze()       │   │ • generate_       │
+│ • load_text()     │   │ • _extract()      │   │   markdown_report │
+│ • is_supported()  │   │ • _score()        │   │ • generate_json_  │
+│                   │   │ • _recommend()    │   │   report / text   │
 │ Supports:         │   │                   │   │                   │
 │ • PDF (pypdf)     │   │                   │   │                   │
 │ • DOCX (docx)     │   │                   │   │                   │
@@ -80,14 +82,15 @@ The agent follows a modular pipeline architecture separating concerns for mainta
                     ┌───────────────┼───────────────┐
                     │               │               │
                     ▼               ▼               ▼
-          ┌───────────────┐ ┌─────────────┐ ┌───────────────┐
-          │ClauseExtractor│ │  Scorer     │ │ Recommender   │
-          │(agent/)       │ │ (agent/)    │ │ (agent/)      │
-          │               │ │             │ │               │
-          │• extract()    │ │• presence() │ │• generate()   │
-          │• prefilter()  │ │• similarity()│ │• prioritize() │
-          │• parse_json() │ │• complete() │ │               │
-          └───────────────┘ └─────────────┘ └───────────────┘
+          ┌───────────────┐ ┌───────────────┐ ┌───────────────┐
+          │ClauseExtractor│ │ComplianceScorer│ │Recommendations│
+          │(agent/)       │ │(agent/)       │ │(in analyzer)  │
+          │               │ │               │ │               │
+          │• extract_     │ │• clause score │ │• per clause   │
+          │  clause()     │ │• document     │ │• document-    │
+          │• keyword pre- │ │  score        │ │  level,       │
+          │  filter       │ │• risk level   │ │  prioritised  │
+          └───────────────┘ └───────────────┘ └───────────────┘
                     │
                     ▼
           ┌───────────────────┐
@@ -547,8 +550,9 @@ pytest tests/test_integration.py -v
 1. **Prototype Status**: Designed for demonstration and learning, not production
 2. **Model Dependent**: Analysis quality varies with LLM capability
 3. **English Optimized**: Best performance with English-language contracts
-4. **Text-Based PDFs**: No OCR for scanned documents
+4. **Text-Based PDFs**: No OCR for scanned documents; legacy binary `.doc` files are not supported (convert to `.docx`)
 5. **No Legal Advice**: Cannot replace professional legal review
+6. **Context Window**: Each clause query sends at most 8,000 characters of contract text. Long contracts are reduced with the keyword pre-filter, so clauses written without any of the configured keywords can be missed
 
 ---
 

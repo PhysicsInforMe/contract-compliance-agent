@@ -24,7 +24,7 @@ class DocumentLoader:
     """
     
     # Supported file extensions
-    SUPPORTED_EXTENSIONS = {".pdf", ".docx", ".doc", ".txt", ".md"}
+    SUPPORTED_EXTENSIONS = {".pdf", ".docx", ".txt", ".md"}
     
     def __init__(self):
         """Initialize the document loader and check available parsers."""
@@ -82,18 +82,20 @@ class DocumentLoader:
             )
         
         # Extract text based on file type
+        page_count: Optional[int] = None
         if suffix == ".pdf":
-            text = self._load_pdf(path)
-        elif suffix in {".docx", ".doc"}:
+            text, page_count = self._load_pdf(path)
+        elif suffix == ".docx":
             text = self._load_docx(path)
         else:
             text = self._load_text(path)
-        
+
         # Build metadata
         metadata = DocumentMetadata(
             filename=path.name,
             file_type=suffix,
             file_size=path.stat().st_size,
+            page_count=page_count,
             word_count=len(text.split()),
             character_count=len(text),
             language="en"  # Default; could be enhanced with detection
@@ -118,15 +120,15 @@ class DocumentLoader:
     # Format-Specific Loaders
     # -------------------------------------------------------------------------
     
-    def _load_pdf(self, path: Path) -> str:
+    def _load_pdf(self, path: Path) -> tuple[str, int]:
         """
         Extract text from a PDF file.
-        
+
         Args:
             path: Path to PDF file
-            
+
         Returns:
-            Extracted text content
+            Tuple of (extracted text content, page count)
         """
         if not self._pdf_available:
             raise ImportError(
@@ -147,13 +149,16 @@ class DocumentLoader:
                 page_text = page.extract_text()
                 if page_text:
                     text_parts.append(page_text)
-        
-        return "\n\n".join(text_parts)
+
+        return "\n\n".join(text_parts), page_count
     
     def _load_docx(self, path: Path) -> str:
         """
         Extract text from a DOCX file.
-        
+
+        Legacy binary ``.doc`` files are not supported by python-docx and
+        are therefore rejected by ``load()``.
+
         Args:
             path: Path to DOCX file
             
@@ -222,7 +227,6 @@ class DocumentLoader:
             ".md": True,
             ".pdf": self._pdf_available,
             ".docx": self._docx_available,
-            ".doc": self._docx_available,
         }
     
     @staticmethod
